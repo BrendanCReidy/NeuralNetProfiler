@@ -18,5 +18,5 @@ The only line of code responsible for inference is line 33
 intermediate_model.predict(features) # This is the only line responsible for inference
 ```
 
-##Important Note
+## Important Note
 The profiling is cumulative. If the flagLayer is set to 5 you will be profiling layers 1-5
