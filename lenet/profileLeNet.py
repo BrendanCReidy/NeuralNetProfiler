@@ -40,16 +40,12 @@ model = Sequential([
   Dense(3,activation="softmax"),
 ])
 
-model.summary()
-
 features = np.random.rand(1,54,54,1)
-count = 0
+flagLayer = 0
 
+l = model.layers[flagLayer]
 
-flagLayer = 1
-for l in model.layers[0:]:
-    intermediate_model = Model(inputs=model.layers[0].input,outputs=l.output)
-    if(count==flagLayer):
-        print("Flagging at: " + l.name)
-        intermediate_model.predict(features) # This is the only line responsible for inference
-    count=count+1
+intermediate_model = Model(inputs=model.layers[0].input,outputs=l.output)
+
+print("Flagging at: " + l.name)
+intermediate_model.predict(features) # This is the only line responsible for inference
