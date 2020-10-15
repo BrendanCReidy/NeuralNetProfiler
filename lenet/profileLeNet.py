@@ -29,7 +29,8 @@ from sklearn.metrics import precision_recall_fscore_support
 tf.get_logger().setLevel('ERROR')
 print("------------------")
 model = Sequential([
-  Conv2D(6, kernel_size=(5,5), activation="tanh", input_shape=(54,54,1), padding='same'),
+  Input(shape=(54,54,1)),
+  Conv2D(6, kernel_size=(5,5), activation="tanh", padding='same'),
   AveragePooling2D(pool_size=(2,2), strides=2, padding='valid'),
   Conv2D(16, kernel_size=(5,5), activation="tanh", padding='valid'),
   AveragePooling2D(pool_size=(2,2), strides=2, padding='valid'),
@@ -39,12 +40,14 @@ model = Sequential([
   Dense(3,activation="softmax"),
 ])
 
+model.summary()
+
 features = np.random.rand(1,54,54,1)
-count = 1
+count = 0
 
 
 flagLayer = 1
-for l in model.layers[1:]:
+for l in model.layers[0:]:
     intermediate_model = Model(inputs=model.layers[0].input,outputs=l.output)
     if(count==flagLayer):
         print("Flagging at: " + l.name)
