@@ -27,9 +27,17 @@ from keras import Input, Model, Sequential
 from keras.utils import to_categorical
 from sklearn.metrics import precision_recall_fscore_support
 tf.get_logger().setLevel('ERROR')
+import sys
+
+print("Number of arguments:", len(sys.argv), "arguments.")
+print("Argument List:", str(sys.argv))
 print("------------------")
+args = sys.argv
+start = -1
+if(len(args)>=2):
+  start = int(args[1])
 model = Sequential([
-  Input(shape=(54,54,1)),
+  Input(shape=(32,32,1)),
   Conv2D(6, kernel_size=(5,5), activation="tanh", padding='same'),
   AveragePooling2D(pool_size=(2,2), strides=2, padding='valid'),
   Conv2D(16, kernel_size=(5,5), activation="tanh", padding='valid'),
@@ -40,12 +48,17 @@ model = Sequential([
   Dense(3,activation="softmax"),
 ])
 
-features = np.random.rand(1,54,54,1)
-flagLayer = 0
+features = np.random.rand(1,32,32,1)
+flagLayer = start
 
 l = model.layers[flagLayer]
 
 intermediate_model = Model(inputs=model.layers[0].input,outputs=l.output)
 
 print("Flagging at: " + l.name)
-intermediate_model.predict(features) # This is the only line responsible for inference
+if(start>=0):
+  ### START FLAGGING HERE
+  intermediate_model.predict(features) # This is the only line responsible for inference
+  ### STOP FLAGGING HERE
+else:
+  start+=1 #(random simple operation)
