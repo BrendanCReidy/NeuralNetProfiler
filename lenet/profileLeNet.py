@@ -55,7 +55,7 @@ model = Sequential([
   Conv2D(120, kernel_size=(5,5), activation="tanh", padding='valid'),
   Flatten(),
   Dense(84, activation="tanh"),
-  Dense(3,activation="softmax"),
+  Dense(10,activation="softmax"),
 ])
 
 
