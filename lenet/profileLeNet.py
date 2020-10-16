@@ -33,11 +33,21 @@ print("Number of arguments:", len(sys.argv), "arguments.")
 print("Argument List:", str(sys.argv))
 print("------------------")
 args = sys.argv
-start = -1
+start = 0
+
+class CustomLayer(keras.layers.Layer):
+    def __init__(self):
+        super(CustomLayer, self).__init__()
+
+    def call(self, inputs):
+        return inputs
+
 if(len(args)>=2):
   start = int(args[1])
+
 model = Sequential([
   Input(shape=(32,32,1)),
+  CustomLayer(),
   Conv2D(6, kernel_size=(5,5), activation="tanh", padding='same'),
   AveragePooling2D(pool_size=(2,2), strides=2, padding='valid'),
   Conv2D(16, kernel_size=(5,5), activation="tanh", padding='valid'),
@@ -48,17 +58,18 @@ model = Sequential([
   Dense(3,activation="softmax"),
 ])
 
+
 features = np.random.rand(1,32,32,1)
 flagLayer = start
 
 l = model.layers[flagLayer]
 
 intermediate_model = Model(inputs=model.layers[0].input,outputs=l.output)
+intermediate_model.predict(features)
 
 print("Flagging at: " + l.name)
-if(start>=0):
-  ### START FLAGGING HERE
-  intermediate_model.predict(features) # This is the only line responsible for inference
-  ### STOP FLAGGING HERE
-else:
-  start+=1 #(random simple operation)
+# Don't trace anything above this comment (it is all setup for the inference)
+
+### START TRACING HERE
+intermediate_model.predict(features) # This is the only line responsible for inference
+### STOP TRACING HERE
