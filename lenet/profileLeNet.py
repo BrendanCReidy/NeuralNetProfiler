@@ -28,48 +28,26 @@ from keras.utils import to_categorical
 from sklearn.metrics import precision_recall_fscore_support
 tf.get_logger().setLevel('ERROR')
 import sys
-
-print("Number of arguments:", len(sys.argv), "arguments.")
-print("Argument List:", str(sys.argv))
-print("------------------")
-args = sys.argv
-start = 0
-
-class CustomLayer(keras.layers.Layer):
+class FlagLayer(keras.layers.Layer):
     def __init__(self):
-        super(CustomLayer, self).__init__()
+        super(FlagLayer, self).__init__()
 
     def call(self, inputs):
+        print("Layer called")
         return inputs
 
-if(len(args)>=2):
-  start = int(args[1])
-
 model = Sequential([
-  Input(shape=(32,32,1)),
-  CustomLayer(),
-  Conv2D(6, kernel_size=(5,5), activation="tanh", padding='same'),
-  AveragePooling2D(pool_size=(2,2), strides=2, padding='valid'),
-  Conv2D(16, kernel_size=(5,5), activation="tanh", padding='valid'),
-  AveragePooling2D(pool_size=(2,2), strides=2, padding='valid'),
-  Conv2D(120, kernel_size=(5,5), activation="tanh", padding='valid'),
+  Conv2D(filters=6, kernel_size=(5, 5), activation='tanh', input_shape=(32,32,1)),
+  AveragePooling2D(),
+  Conv2D(filters=16, kernel_size=(5, 5), activation='tanh'),
+  AveragePooling2D(),
+  Activation('tanh'),
   Flatten(),
-  Dense(84, activation="tanh"),
-  Dense(10,activation="softmax"),
+  Dense(units=120, activation='tanh'),
+  Dense(units=84, activation='tanh'),
+  Dense(units=10, activation = 'sigmoid'),
+  FlagLayer(),
 ])
 
-
-features = np.random.rand(1,32,32,1)
-flagLayer = start
-
-l = model.layers[flagLayer]
-
-intermediate_model = Model(inputs=model.layers[0].input,outputs=l.output)
-intermediate_model.predict(features)
-
-print("Flagging at: " + l.name)
-# Don't trace anything above this comment (it is all setup for the inference)
-
-### START TRACING HERE
-intermediate_model.predict(features) # This is the only line responsible for inference
-### STOP TRACING HERE
+features = np.ones((1,32,32,1))*4
+model.predict(features)
